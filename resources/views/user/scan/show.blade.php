@@ -43,7 +43,7 @@
                         <div>
                             <h2 class="text-xl font-bold text-white mb-4">Foto Scan</h2>
                             <div class="bg-slate-800 rounded-xl overflow-hidden">
-                                <img src="{{ asset('storage/' . $scan->image_path) }}" alt="Scan Image"
+                                <img src="{{ asset($scan->image_path) }}" alt="Scan Image"
                                     class="w-full h-96 object-cover">
                             </div>
                         </div>

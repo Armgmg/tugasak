@@ -24,7 +24,9 @@ class ScanController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('scans', 'public');
+            $filename = time() . '_' . $request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path('uploads/scans'), $filename);
+            $imagePath = 'uploads/scans/' . $filename;
         }
 
         $detectedItems = null;

@@ -9,8 +9,7 @@
             <div>
                 <h2 class="text-xl font-bold text-white mb-4">Foto Scan</h2>
                 <div class="bg-slate-800 rounded-xl overflow-hidden">
-                    <img src="{{ asset('storage/' . $scan->image_path) }}" alt="Scan Image"
-                        class="w-full h-96 object-cover">
+                    <img src="{{ asset($scan->image_path) }}" alt="Scan Image" class="w-full h-96 object-cover">
                 </div>
             </div>
 
@@ -53,17 +52,17 @@
                 <div class="bg-slate-800 rounded-xl p-6">
                     <h3 class="text-lg font-bold text-white mb-4">Status</h3>
                     <span class="px-4 py-2 rounded-full font-medium
-                                        @if($scan->status === 'pending')
-                                             @if(Str::contains($scan->admin_notes, 'SYSTEM_VERIFIED'))
-                                                bg-teal-500/20 text-teal-400
+                                            @if($scan->status === 'pending')
+                                                 @if(Str::contains($scan->admin_notes, 'SYSTEM_VERIFIED'))
+                                                    bg-teal-500/20 text-teal-400
+                                                @else
+                                                    bg-yellow-500/20 text-yellow-400
+                                                @endif
+                                            @elseif($scan->status === 'approved')
+                                                bg-green-500/20 text-green-400
                                             @else
-                                                bg-yellow-500/20 text-yellow-400
-                                            @endif
-                                        @elseif($scan->status === 'approved')
-                                            bg-green-500/20 text-green-400
-                                        @else
-                                            bg-red-500/20 text-red-400
-                                        @endif">
+                                                bg-red-500/20 text-red-400
+                                            @endif">
                         @if($scan->status === 'pending' && Str::contains($scan->admin_notes, 'SYSTEM_VERIFIED'))
                             Auto Verified (Menunggu Berat)
                         @else
