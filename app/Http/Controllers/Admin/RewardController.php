@@ -41,18 +41,14 @@ class RewardController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Store image in public disk
-            $path = $request->file('image')->store('rewards', 'public');
-            // We'll store the direct URL or relative path. 
-            // The existing MarketplaceController uses direct URL via asset(), 
-            // so let's check how the seeder worked. 
-            // Looking at marketplace.blade.php: src="{{ $reward->image }}"
-            // So we should probably store the full URL or handle asset() in view.
-            // For now, let's store the '/storage/path' so it works easily.
-            $validated['image'] = '/storage/' . $path;
+            // Generate unique filename
+            $filename = time() . '_' . $request->file('image')->getClientOriginalName();
+            // Move directly to public/img
+            $request->file('image')->move(public_path('img'), $filename);
+            $validated['image'] = $filename;
         }
 
-        // Default status to true if not present (though checkbox sends 1 or 0 usually if handled, otherwise null)
+        // Default status to true if not present
         $validated['status'] = $request->has('status');
 
         Reward::create($validated);
@@ -84,14 +80,14 @@ class RewardController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image if it exists and is a local file (starts with /storage/)
-            if ($reward->image && str_starts_with($reward->image, '/storage/')) {
-                $oldPath = str_replace('/storage/', '', $reward->image);
-                Storage::disk('public')->delete($oldPath);
+            // Delete old image if it exists in public/img
+            if ($reward->image && file_exists(public_path('img/' . $reward->image))) {
+                unlink(public_path('img/' . $reward->image));
             }
 
-            $path = $request->file('image')->store('rewards', 'public');
-            $validated['image'] = '/storage/' . $path;
+            $filename = time() . '_' . $request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path('img'), $filename);
+            $validated['image'] = $filename;
         }
 
         // Handle checkbox for status
