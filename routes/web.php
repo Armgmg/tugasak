@@ -33,14 +33,19 @@ Route::get('/fix-db', function () {
 // ASSET DEBUG ROUTE
 Route::get('/debug-assets', function () {
     $path = public_path('build/manifest.json');
+    $img_path = public_path('img');
+
+    $files = [];
+    if (is_dir($img_path)) {
+        $files = array_diff(scandir($img_path), array('.', '..'));
+    }
+
     return [
         'APP_ENV' => config('app.env'),
         'APP_URL' => config('app.url'),
-        'ASSET_URL' => config('app.asset_url'),
         'Manifest Exists' => file_exists($path),
-        'Manifest Content' => file_exists($path) ? json_decode(file_get_contents($path)) : 'N/A',
-        'Current Scheme' => request()->getScheme(),
-        'Is Secure' => request()->secure(),
+        'Files in public/img' => array_values($files),
+        'Rewards in DB' => \App\Models\Reward::all(['name', 'image']),
     ];
 });
 
