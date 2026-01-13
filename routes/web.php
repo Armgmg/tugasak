@@ -24,6 +24,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// EMERGENCY DATABASE FIX ROUTE
+Route::get('/fix-db', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate:fresh --seed --force');
+    return "Database has been RESET successfully. Tables created: " . \Illuminate\Support\Facades\Artisan::output();
+});
+
 
 
 /*
