@@ -95,8 +95,9 @@
                     <!-- Welcome Section -->
                     <div class="flex items-center justify-between mb-8 animate-fade-in">
                         <div>
-                            <h1 class="text-4xl font-bold text-gray-900 dark:text-white">Selamat Sore,
-                                {{ Auth::user()->name }}! 👋</h1>
+                            <h1 class="text-4xl font-bold text-gray-900 dark:text-white">Hallo,
+                                {{ Auth::user()->name }}! 👋
+                            </h1>
                             <p class="text-gray-600 dark:text-gray-400 mt-2">Siap untuk berkontribusi pada lingkungan
                                 hari ini?</p>
                         </div>
