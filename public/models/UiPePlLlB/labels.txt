@@ -1,0 +1,5 @@
+plastic
+metal
+paper
+organic
+unknown
