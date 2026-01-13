@@ -89,14 +89,14 @@
                                     <div
                                         class="w-20 h-20 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center mb-4">
                                         <span class="text-4xl font-bold text-white"
-                                            id="profileAvatar">{{ substr(Auth::user()->name ?? 'J', 0, 1) }}</span>
+                                            id="profileAvatar">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</span>
                                     </div>
                                     <h3 class="text-xl font-bold text-gray-900 dark:text-white" id="profileName">
-                                        {{ Auth::user()->name ?? 'John Doe' }}
+                                        {{ Auth::user()->name }}
                                     </h3>
                                     <p class="text-teal-600 dark:text-teal-400 font-semibold mt-1">Member Gold</p>
                                     <p class="text-gray-600 dark:text-gray-400 text-sm mt-3" id="profileEmail">{{
-                                        Auth::user()->email ?? 'john@example.com' }}</p>
+    Auth::user()->email }}</p>
                                     <button onclick="toggleEditMode()"
                                         class="w-full mt-6 px-4 py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition"
                                         id="editProfileBtn">
