@@ -87,7 +87,8 @@
                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
                             </path>
                         </svg>
-                        <span id="notificationDot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                        <span id="notificationDot"
+                            class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
                     </a>
                 </div>
             </div>
@@ -159,7 +160,7 @@
                             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden product-card border border-gray-200 dark:border-gray-700 flex flex-col"
                                 data-category="{{ $reward->category }}">
                                 <div class="h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden group">
-                                    <img src="{{ $reward->image }}" alt="{{ $reward->name }}"
+                                    <img src="{{ asset('img/' . $reward->image) }}" alt="{{ $reward->name }}"
                                         class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
                                     <div
                                         class="absolute top-3 right-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-teal-600 dark:text-teal-400 shadow-sm">
@@ -278,7 +279,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-             checkNotifications();
+            checkNotifications();
         });
 
         async function checkNotifications() {
@@ -286,11 +287,11 @@
                 const res = await fetch("{{ route('notifications.data') }}");
                 const data = await res.json();
                 if (data.count > 0) {
-                   const dot = document.getElementById('notificationDot');
-                   if(dot) dot.classList.remove('hidden');
+                    const dot = document.getElementById('notificationDot');
+                    if (dot) dot.classList.remove('hidden');
                 } else {
-                   const dot = document.getElementById('notificationDot');
-                   if(dot) dot.classList.add('hidden');
+                    const dot = document.getElementById('notificationDot');
+                    if (dot) dot.classList.add('hidden');
                 }
             } catch (e) {
                 console.error('Failed to check notifications', e);
@@ -331,7 +332,7 @@
                 // Case insensitive comparison for robustness
                 const prodCat = product.dataset.category.toLowerCase();
                 const targetCat = category.toLowerCase();
-                
+
                 if (targetCat === 'all' || prodCat === targetCat) {
                     product.classList.remove('hidden');
                 } else {
