@@ -90,7 +90,8 @@
                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
                             </path>
                         </svg>
-                        <span id="notificationDot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                        <span id="notificationDot"
+                            class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
                     </a>
                 </div>
             </div>
@@ -275,7 +276,7 @@
         const scansData = @json($scans);
 
         document.addEventListener('DOMContentLoaded', () => {
-             checkNotifications();
+            checkNotifications();
         });
 
         async function checkNotifications() {
@@ -283,11 +284,11 @@
                 const res = await fetch("{{ route('notifications.data') }}");
                 const data = await res.json();
                 if (data.count > 0) {
-                   const dot = document.getElementById('notificationDot');
-                   if(dot) dot.classList.remove('hidden');
+                    const dot = document.getElementById('notificationDot');
+                    if (dot) dot.classList.remove('hidden');
                 } else {
-                   const dot = document.getElementById('notificationDot');
-                   if(dot) dot.classList.add('hidden');
+                    const dot = document.getElementById('notificationDot');
+                    if (dot) dot.classList.add('hidden');
                 }
             } catch (e) {
                 console.error('Failed to check notifications', e);
@@ -386,7 +387,7 @@
     <tr class="table-row-hover">
         <td class="px-6 py-4">
             <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700">
-                <img src="/storage/${scan.image_path}" alt="Scan" class="w-full h-full object-cover">
+                <img src="/${scan.image_path}" alt="Scan" class="w-full h-full object-cover">
             </div>
         </td>
         <td class="px-6 py-4 text-gray-600 dark:text-gray-400">${new Date(scan.created_at).toLocaleDateString('id-ID')}
