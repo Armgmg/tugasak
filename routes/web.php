@@ -30,6 +30,20 @@ Route::get('/fix-db', function () {
     return "Database has been RESET successfully. Tables created: " . \Illuminate\Support\Facades\Artisan::output();
 });
 
+// ASSET DEBUG ROUTE
+Route::get('/debug-assets', function () {
+    $path = public_path('build/manifest.json');
+    return [
+        'APP_ENV' => config('app.env'),
+        'APP_URL' => config('app.url'),
+        'ASSET_URL' => config('app.asset_url'),
+        'Manifest Exists' => file_exists($path),
+        'Manifest Content' => file_exists($path) ? json_decode(file_get_contents($path)) : 'N/A',
+        'Current Scheme' => request()->getScheme(),
+        'Is Secure' => request()->secure(),
+    ];
+});
+
 
 
 /*
