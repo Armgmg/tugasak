@@ -34,9 +34,11 @@
                                 @foreach($criteria as $code => $info)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
-                                            {{ $code }}</td>
+                                            {{ $code }}
+                                        </td>
                                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
-                                            {{ $info['name'] }}</td>
+                                            {{ $info['name'] }}
+                                        </td>
                                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $info['type'] == 'benefit' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -45,7 +47,8 @@
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700 font-bold">
-                                            {{ $info['weight'] }}</td>
+                                            {{ $info['weight'] }}
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -53,41 +56,65 @@
                     </div>
                 </div>
 
-                <!-- 2. Matriks Awal (X) -->
+                <!-- 2. Matriks Keputusan Awal (X) -->
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
-                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-teal-600">
+                    <div
+                        class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-teal-600 flex justify-between items-center">
                         <h4 class="text-lg font-semibold text-white">2. Matriks Keputusan Awal (X)</h4>
+                        <span class="text-xs text-teal-100 bg-teal-700 px-2 py-1 rounded">Mode Simulasi Aktif</span>
                     </div>
-                    <div class="p-6 overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead>
-                                <tr>
-                                    <th
-                                        class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Alternatif</th>
-                                    @foreach($criteria as $code => $info)
+
+                    <form action="{{ route('admin.saw.index') }}" method="GET">
+                        <div class="p-6 overflow-x-auto">
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                ℹ️ Anda dapat mengubah angka di bawah ini untuk mensimulasikan perhitungan. Klik tombol
+                                <strong>"Hitung Simulasi"</strong> untuk melihat hasilnya.
+                            </p>
+                            <table class="min-w-full mb-4">
+                                <thead>
+                                    <tr>
                                         <th
                                             class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            {{ $info['name'] }} ({{ $code }})</th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-gray-800">
-                                @foreach($data as $altCode => $scores)
-                                    <tr>
-                                        <td
-                                            class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700 font-medium">
-                                            {{ $alternatives[$altCode] }} ({{ $altCode }})
-                                        </td>
-                                        @foreach($scores as $score)
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
-                                                {{ $score }}</td>
+                                            Alternatif</th>
+                                        @foreach($criteria as $code => $info)
+                                            <th
+                                                class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                {{ $info['name'] }} ({{ $code }})</th>
                                         @endforeach
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800">
+                                    @foreach($data as $altCode => $scores)
+                                        <tr>
+                                            <td
+                                                class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700 font-medium">
+                                                {{ $alternatives[$altCode] }} ({{ $altCode }})
+                                            </td>
+                                            @foreach($scores as $critCode => $score)
+                                                <td
+                                                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
+                                                    <input type="number" step="0.1" name="values[{{ $altCode }}][{{ $critCode }}]"
+                                                        value="{{ $score }}"
+                                                        class="w-20 px-2 py-1 border rounded text-gray-700 dark:text-gray-300 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
+                            <div class="flex gap-3">
+                                <button type="submit"
+                                    class="px-4 py-2 bg-teal-600 text-white font-bold rounded hover:bg-teal-700 transition shadow">
+                                    🔄 Hitung Simulasi
+                                </button>
+                                <a href="{{ route('admin.saw.index') }}"
+                                    class="px-4 py-2 bg-gray-300 text-gray-700 font-bold rounded hover:bg-gray-400 transition">
+                                    ❌ Reset Default
+                                </a>
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- 3. Normalisasi Matriks (R) -->
@@ -105,7 +132,8 @@
                                     @foreach($criteria as $code => $info)
                                         <th
                                             class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            {{ $code }}</th>
+                                            {{ $code }}
+                                        </th>
                                     @endforeach
                                 </tr>
                             </thead>
@@ -118,7 +146,8 @@
                                         </td>
                                         @foreach($scores as $score)
                                             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
-                                                {{ number_format($score, 2) }}</td>
+                                                {{ number_format($score, 2) }}
+                                            </td>
                                         @endforeach
                                     </tr>
                                 @endforeach

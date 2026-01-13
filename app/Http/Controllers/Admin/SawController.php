@@ -25,12 +25,25 @@ class SawController extends Controller
         ];
 
         // 2. Matriks Awal (X)
-        // Data dari Excel
-        $data = [
-            'A1' => ['C1' => 4, 'C2' => 2, 'C3' => 1],
-            'A2' => ['C1' => 3, 'C2' => 3, 'C3' => 2],
-            'A3' => ['C1' => 5, 'C2' => 4, 'C3' => 3],
-        ];
+        // Cek apakah ada input simulasi dari user?
+        $request = request();
+        if ($request->has('values')) {
+            // Gunakan data simuasi
+            $data = $request->input('values');
+            // Pastikan format angka (casting)
+            foreach ($data as $k => $v) {
+                foreach ($v as $c => $val) {
+                    $data[$k][$c] = floatval($val);
+                }
+            }
+        } else {
+            // Default: Data dari Excel
+            $data = [
+                'A1' => ['C1' => 4, 'C2' => 2, 'C3' => 1],
+                'A2' => ['C1' => 3, 'C2' => 3, 'C3' => 2],
+                'A3' => ['C1' => 5, 'C2' => 4, 'C3' => 3],
+            ];
+        }
 
         // 3. Normalisasi Matriks (R)
         // Cari Min/Max tiap kolom dulu
