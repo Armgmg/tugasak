@@ -250,6 +250,9 @@ Route::middleware(['auth', 'admin'])
         | ADMIN REWARDS
         |--------------------------------------------------------------------------
         */
+        Route::get('/rekomendasi', [\App\Http\Controllers\Admin\SawController::class, 'index'])
+            ->name('saw.index');
+
         Route::resource('rewards', RewardController::class);
 
         /*

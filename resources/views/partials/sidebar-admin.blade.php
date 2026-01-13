@@ -39,6 +39,11 @@
             🎁 Kelola Marketplace
         </a>
 
+        <!-- SPK SAW -->
+        <a href="{{ route('admin.saw.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+            📊 SPK Metode SAW
+        </a>
+
         <!-- PENGATURAN -->
         <a href="{{ route('admin.settings') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
             ⚙️ Pengaturan
