@@ -83,7 +83,7 @@
                     @if($reward->image)
                         <div class="mb-4">
                             <p class="text-xs text-gray-500 mb-1">Gambar saat ini:</p>
-                            <img src="{{ $reward->image }}" alt="Current Image" class="h-32 rounded-lg object-cover border border-gray-200 dark:border-gray-600">
+                            <img src="{{ asset('img/' . $reward->image) }}" alt="Current Image" class="h-32 rounded-lg object-cover border border-gray-200 dark:border-gray-600">
                         </div>
                     @endif
 
