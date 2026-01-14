@@ -182,8 +182,7 @@
 
                                     <div id="cameraContainer" class="mt-4 hidden">
                                         <video id="cameraVideo" autoplay playsinline
-                                            class="w-full rounded-lg mb-4 bg-black"
-                                            style="min-height: 300px; max-height: 500px;"></video>
+                                            class="w-full rounded-lg mb-4 bg-black" style="min-height: 300px;"></video>
                                         <div class="flex gap-3">
                                             <button id="captureBtn" onclick="captureFromCamera()"
                                                 class="px-4 py-2 bg-teal-500 text-white rounded-lg">Ambil Foto</button>
@@ -375,44 +374,37 @@
         let cameraStream = null;
 
         async function startCamera() {
-            console.log('startCamera called');
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert('Kamera tidak didukung di browser ini. Pastikan menggunakan HTTPS.');
+                alert('Kamera tidak didukung di browser ini');
                 return;
             }
             try {
-                console.log('Requesting camera access...');
                 cameraStream = await navigator.mediaDevices.getUserMedia({
                     video: {
-                        facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
+                        facingMode: 'environment'
                     },
                     audio: false
                 });
-                console.log('Camera access granted');
                 const video = document.getElementById('cameraVideo');
                 video.srcObject = cameraStream;
 
-                // Wait for video to be ready
+                // CRITICAL: Explicitly play the video
                 video.onloadedmetadata = () => {
-                    console.log('Video ready, dimensions:', video.videoWidth, 'x', video.videoHeight);
-                    video.play();
+                    video.play().catch(err => {
+                        console.error('Video play error:', err);
+                        alert('Gagal memutar video kamera. Coba refresh halaman.');
+                    });
                 };
 
                 document.getElementById('cameraContainer').classList.remove('hidden');
                 document.getElementById('uploadArea').classList.add('hidden');
             } catch (err) {
-                console.error('Camera error:', err);
-                let errorMsg = 'Tidak dapat mengakses kamera: ' + err.message;
+                console.error('Camera error', err);
+                let msg = 'Tidak dapat mengakses kamera: ' + err.message;
                 if (err.name === 'NotAllowedError') {
-                    errorMsg = 'Akses kamera ditolak. Klik ikon gembok di address bar dan izinkan akses kamera.';
-                } else if (err.name === 'NotFoundError') {
-                    errorMsg = 'Kamera tidak ditemukan pada perangkat ini.';
-                } else if (err.name === 'NotReadableError') {
-                    errorMsg = 'Kamera sedang digunakan aplikasi lain.';
+                    msg = 'Akses kamera ditolak. Klik ikon gembok di address bar → Site settings → Camera → Allow';
                 }
-                alert(errorMsg);
+                alert(msg);
             }
         }
 
