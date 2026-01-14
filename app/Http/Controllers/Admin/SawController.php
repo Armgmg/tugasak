@@ -9,8 +9,7 @@ class SawController extends Controller
 {
     public function index()
     {
-        // 1. Definisi Alternatif & Kriteria
-        // Sesuai Excel user
+
         $alternatives = [
             'A1' => 'Pulsa / Paket Data',
             'A2' => 'Produk Ramah Lingkungan',
@@ -24,20 +23,16 @@ class SawController extends Controller
             'C3' => ['name' => 'Harga Poin', 'type' => 'cost', 'weight' => 5],
         ];
 
-        // 2. Matriks Awal (X)
-        // Cek apakah ada input simulasi dari user?
+
         $request = request();
         if ($request->has('values')) {
-            // Gunakan data simuasi
             $data = $request->input('values');
-            // Pastikan format angka (casting)
             foreach ($data as $k => $v) {
                 foreach ($v as $c => $val) {
                     $data[$k][$c] = floatval($val);
                 }
             }
         } else {
-            // Default: Data dari Excel
             $data = [
                 'A1' => ['C1' => 4, 'C2' => 2, 'C3' => 1],
                 'A2' => ['C1' => 3, 'C2' => 3, 'C3' => 2],
@@ -45,8 +40,6 @@ class SawController extends Controller
             ];
         }
 
-        // 3. Normalisasi Matriks (R)
-        // Cari Min/Max tiap kolom dulu
         $minMax = [];
         foreach ($criteria as $code => $info) {
             $columnData = array_column($data, $code);
@@ -61,16 +54,13 @@ class SawController extends Controller
         foreach ($data as $altCode => $scores) {
             foreach ($criteria as $critCode => $info) {
                 if ($info['type'] == 'benefit') {
-                    // Rumus Benefit: Nilai / Max
                     $normalized[$altCode][$critCode] = $scores[$critCode] / $minMax[$critCode];
                 } else {
-                    // Rumus Cost: Min / Nilai
                     $normalized[$altCode][$critCode] = $minMax[$critCode] / $scores[$critCode];
                 }
             }
         }
 
-        // 4. Perankingan (V)
         $ranks = [];
         foreach ($normalized as $altCode => $scores) {
             $totalScore = 0;
@@ -84,7 +74,6 @@ class SawController extends Controller
             ];
         }
 
-        // Sort dari terbesar ke terkecil
         usort($ranks, function ($a, $b) {
             return $b['score'] <=> $a['score'];
         });
