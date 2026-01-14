@@ -30,7 +30,10 @@
     </div>
 
     <!-- Debug banner (visible in local/dev only) -->
-    @php $env = config('app.env'); @endphp
+    @php
+        $env = config('app.env');
+    @endphp
+
     @if($env === 'local' || $env === 'development' || request()->getHost() === '127.0.0.1')
         <div id="devDebug"
             style="position:fixed;right:12px;bottom:12px;background:rgba(0,0,0,0.6);color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;z-index:99999;box-shadow:0 6px 18px rgba(0,0,0,0.3);">
@@ -45,8 +48,16 @@
                 const btn = document.getElementById('devDebugBtn');
                 status.textContent = (typeof startCamera === 'function') ? 'startCamera() tersedia' : 'startCamera() TIDAK tersedia';
                 btn.addEventListener('click', () => {
-                    try { if (typeof startCamera === 'function') { startCamera(); } else { alert('startCamera() tidak tersedia pada halaman ini.'); } }
-                    catch (err) { alert('Error menjalankan startCamera(): ' + err.message); console.error(err); }
+                    try {
+                        if (typeof startCamera === 'function') {
+                            startCamera();
+                        } else {
+                            alert('startCamera() tidak tersedia pada halaman ini.');
+                        }
+                    } catch (err) {
+                        alert('Error menjalankan startCamera(): ' + err.message);
+                        console.error(err);
+                    }
                 });
             });
         </script>
@@ -90,7 +101,12 @@
                 openBtn.addEventListener('click', async () => {
                     modal.style.display = 'flex';
                     try {
-                        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+                        stream = await navigator.mediaDevices.getUserMedia({
+                            video: {
+                                facingMode: 'environment'
+                            },
+                            audio: false
+                        });
                         video.srcObject = stream;
                     } catch (err) {
                         alert('Gagal mengakses kamera: ' + (err.message || err));
@@ -100,13 +116,19 @@
 
                 closeBtn.addEventListener('click', () => {
                     modal.style.display = 'none';
-                    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+                    if (stream) {
+                        stream.getTracks().forEach(t => t.stop());
+                        stream = null;
+                    }
                     video.srcObject = null;
                     downloadLink.style.display = 'none';
                 });
 
                 captureBtn.addEventListener('click', () => {
-                    if (!video || !video.videoWidth) { alert('Kamera belum siap'); return; }
+                    if (!video || !video.videoWidth) {
+                        alert('Kamera belum siap');
+                        return;
+                    }
                     const canvas = document.createElement('canvas');
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
