@@ -45,6 +45,7 @@
             });
         });
     </script>
+@endif
 
     {{-- Global camera test modal (local only) --}}
     @if(app()->environment('local') || request()->getHost() === '127.0.0.1')
