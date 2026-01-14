@@ -7,33 +7,51 @@ use Illuminate\Http\Request;
 
 class SawController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // 1. Definisi Alternatif & Kriteria
-        // Sesuai Excel user
+        // 1. Definisi Alternatif & Kriteria (Default)
         $alternatives = [
             'A1' => 'Pulsa / Paket Data',
             'A2' => 'Produk Ramah Lingkungan',
             'A3' => 'Token Listrik / E-Wallet',
         ];
 
-        // C1: Berat (kg), C2: Nilai Poin, C3: Harga Poin
+        // Default Criteria
         $criteria = [
             'C1' => ['name' => 'Berat (kg)', 'type' => 'benefit', 'weight' => 3],
             'C2' => ['name' => 'Nilai Poin', 'type' => 'benefit', 'weight' => 4],
             'C3' => ['name' => 'Harga Poin', 'type' => 'cost', 'weight' => 5],
         ];
 
-        // 2. Matriks Awal (X)
-        // Data dari Excel
+        // Default Matrix Data
         $data = [
             'A1' => ['C1' => 4, 'C2' => 2, 'C3' => 1],
             'A2' => ['C1' => 3, 'C2' => 3, 'C3' => 2],
             'A3' => ['C1' => 5, 'C2' => 4, 'C3' => 3],
         ];
 
+        // Override with user input if method is POST and data exists
+        if ($request->isMethod('post')) {
+            if ($request->has('weights')) {
+                foreach ($request->input('weights') as $key => $weight) {
+                    if (isset($criteria[$key])) {
+                        $criteria[$key]['weight'] = (float) $weight;
+                    }
+                }
+            }
+
+            if ($request->has('matrix')) {
+                foreach ($request->input('matrix') as $altKey => $scores) {
+                    foreach ($scores as $critKey => $score) {
+                        if (isset($data[$altKey][$critKey])) {
+                            $data[$altKey][$critKey] = (float) $score;
+                        }
+                    }
+                }
+            }
+        }
+
         // 3. Normalisasi Matriks (R)
-        // Cari Min/Max tiap kolom dulu
         $minMax = [];
         foreach ($criteria as $code => $info) {
             $columnData = array_column($data, $code);
@@ -48,11 +66,13 @@ class SawController extends Controller
         foreach ($data as $altCode => $scores) {
             foreach ($criteria as $critCode => $info) {
                 if ($info['type'] == 'benefit') {
-                    // Rumus Benefit: Nilai / Max
-                    $normalized[$altCode][$critCode] = $scores[$critCode] / $minMax[$critCode];
+                    $normalized[$altCode][$critCode] = $minMax[$critCode] != 0
+                        ? $scores[$critCode] / $minMax[$critCode]
+                        : 0;
                 } else {
-                    // Rumus Cost: Min / Nilai
-                    $normalized[$altCode][$critCode] = $minMax[$critCode] / $scores[$critCode];
+                    $normalized[$altCode][$critCode] = $scores[$critCode] != 0
+                        ? $minMax[$critCode] / $scores[$critCode]
+                        : 0;
                 }
             }
         }

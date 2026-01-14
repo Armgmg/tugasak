@@ -233,7 +233,7 @@ Route::middleware(['auth', 'admin'])
         | ADMIN SPK (SAW METHOD)
         |--------------------------------------------------------------------------
         */
-        Route::get('/saw', [SawController::class, 'index'])
+        Route::match(['get', 'post'], '/saw', [SawController::class, 'index'])
             ->name('saw.index');
 
         /*

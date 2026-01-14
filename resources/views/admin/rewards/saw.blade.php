@@ -7,88 +7,86 @@
                 <h3 class="text-3xl font-medium text-gray-700 dark:text-gray-200 mb-6">SPK Rekomendasi Reward (Metode SAW)
                 </h3>
 
-                <!-- 1. Kriteria & Bobot -->
-                <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
-                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-teal-600">
-                        <h4 class="text-lg font-semibold text-white">1. Kriteria & Bobot</h4>
+                <form action="{{ route('admin.saw.index') }}" method="POST">
+                    @csrf
+                    
+                    <div class="flex justify-between items-center mb-6">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-calculator mr-2"></i> Hitung / Simulasikan
+                        </button>
+                        <a href="{{ route('admin.saw.index') }}" class="text-blue-600 hover:text-blue-800">
+                            Reset ke Default
+                        </a>
                     </div>
-                    <div class="p-6">
-                        <table class="min-w-full">
-                            <thead>
-                                <tr>
-                                    <th
-                                        class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Kode</th>
-                                    <th
-                                        class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Nama Kriteria</th>
-                                    <th
-                                        class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Atribut</th>
-                                    <th
-                                        class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Bobot</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-gray-800">
-                                @foreach($criteria as $code => $info)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
-                                            {{ $code }}</td>
-                                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
-                                            {{ $info['name'] }}</td>
-                                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $info['type'] == 'benefit' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                {{ ucfirst($info['type']) }}
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700 font-bold">
-                                            {{ $info['weight'] }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
-                <!-- 2. Matriks Awal (X) -->
-                <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
-                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-teal-600">
-                        <h4 class="text-lg font-semibold text-white">2. Matriks Keputusan Awal (X)</h4>
-                    </div>
-                    <div class="p-6 overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead>
-                                <tr>
-                                    <th
-                                        class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Alternatif</th>
-                                    @foreach($criteria as $code => $info)
-                                        <th
-                                            class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            {{ $info['name'] }} ({{ $code }})</th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-gray-800">
-                                @foreach($data as $altCode => $scores)
+                    <!-- 1. Kriteria & Bobot -->
+                    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
+                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-teal-600">
+                            <h4 class="text-lg font-semibold text-white">1. Kriteria & Bobot (Input Simulasi)</h4>
+                        </div>
+                        <div class="p-6">
+                            <table class="min-w-full">
+                                <thead>
                                     <tr>
-                                        <td
-                                            class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700 font-medium">
-                                            {{ $alternatives[$altCode] }} ({{ $altCode }})
-                                        </td>
-                                        @foreach($scores as $score)
+                                        <th class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kode</th>
+                                        <th class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nama Kriteria</th>
+                                        <th class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Atribut</th>
+                                        <th class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bobot (Edit)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800">
+                                    @foreach($criteria as $code => $info)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">{{ $code }}</td>
+                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">{{ $info['name'] }}</td>
                                             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
-                                                {{ $score }}</td>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $info['type'] == 'benefit' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                    {{ ucfirst($info['type']) }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
+                                                <input type="number" step="0.01" name="weights[{{ $code }}]" value="{{ $info['weight'] }}" class="w-24 px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 2. Matriks Awal (X) -->
+                    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
+                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-teal-600">
+                            <h4 class="text-lg font-semibold text-white">2. Matriks Keputusan Awal (X) - Input Simulasi</h4>
+                        </div>
+                        <div class="p-6 overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Alternatif</th>
+                                        @foreach($criteria as $code => $info)
+                                            <th class="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ $info['name'] }} ({{ $code }})</th>
                                         @endforeach
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800">
+                                    @foreach($data as $altCode => $scores)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700 font-medium">
+                                                {{ $alternatives[$altCode] }} ({{ $altCode }})
+                                            </td>
+                                            @foreach($scores as $critCode => $score)
+                                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-700">
+                                                    <input type="number" step="0.01" name="matrix[{{ $altCode }}][{{ $critCode }}]" value="{{ $score }}" class="w-24 px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                </form>
 
                 <!-- 3. Normalisasi Matriks (R) -->
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
