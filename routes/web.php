@@ -24,31 +24,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// EMERGENCY DATABASE FIX ROUTE
-Route::get('/fix-db', function () {
-    \Illuminate\Support\Facades\Artisan::call('migrate:fresh --seed --force');
-    return "Database has been RESET successfully. Tables created: " . \Illuminate\Support\Facades\Artisan::output();
-});
-
-// ASSET DEBUG ROUTE
-Route::get('/debug-assets', function () {
-    $path = public_path('build/manifest.json');
-    $img_path = public_path('img');
-
-    $files = [];
-    if (is_dir($img_path)) {
-        $files = array_diff(scandir($img_path), array('.', '..'));
-    }
-
-    return [
-        'APP_ENV' => config('app.env'),
-        'APP_URL' => config('app.url'),
-        'Manifest Exists' => file_exists($path),
-        'Files in public/img' => array_values($files),
-        'Rewards in DB' => \App\Models\Reward::all(['name', 'image']),
-    ];
-});
-
 
 
 /*
@@ -250,9 +225,6 @@ Route::middleware(['auth', 'admin'])
         | ADMIN REWARDS
         |--------------------------------------------------------------------------
         */
-        Route::get('/rekomendasi', [\App\Http\Controllers\Admin\SawController::class, 'index'])
-            ->name('saw.index');
-
         Route::resource('rewards', RewardController::class);
 
         /*
