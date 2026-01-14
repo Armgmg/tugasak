@@ -116,7 +116,86 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Products Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-slide-in-up">
+                        @forelse($rewards as $reward)
+                            <div class="product-card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden" data-category="{{ strtolower($reward->category) }}">
+                                <!-- Product Image -->
+                                <div class="relative h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                                    @if($reward->image)
+                                        <img src="{{ asset('img/' . $reward->image) }}" alt="{{ $reward->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                    <!-- Category Badge -->
+                                    <div class="absolute top-3 right-3">
+                                        <span class="px-3 py-1 text-xs font-semibold rounded-full 
+                                            @if(strtolower($reward->category) === 'voucher') bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300
+                                            @elseif(strtolower($reward->category) === 'product') bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300
+                                            @elseif(strtolower($reward->category) === 'donation') bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300
+                                            @else bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300
+                                            @endif">
+                                            {{ ucfirst($reward->category) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Info -->
+                                <div class="p-5">
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">{{ $reward->name }}</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{{ $reward->description }}</p>
+                                    
+                                    <!-- Stock Info -->
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                            </svg>
+                                            <span class="text-sm text-gray-600 dark:text-gray-400">Stok: {{ $reward->stock }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Points and Button -->
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-5 h-5 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M8.16 2.75a.75.75 0 00-1.32 0l-.478 1.408A.75.75 0 006.25 5h1.5a.75.75 0 00.75-.75v-1.5zm4.08 0a.75.75 0 00-1.32 0l-.478 1.408A.75.75 0 0010.25 5h1.5a.75.75 0 00.75-.75v-1.5z"></path>
+                                            </svg>
+                                            <span class="text-xl font-bold text-teal-600 dark:text-teal-400">{{ number_format($reward->poin_required, 0, ',', '.') }}</span>
+                                        </div>
+                                        
+                                        @if($reward->stock > 0)
+                                            <form action="{{ route('marketplace.tukar') }}" method="POST" class="inline">
+                                                @csrf
+                                                <input type="hidden" name="reward_id" value="{{ $reward->id }}">
+                                                <button type="submit" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition">
+                                                    Tukar
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button disabled class="px-4 py-2 bg-gray-400 text-white font-semibold rounded-lg cursor-not-allowed">
+                                                Habis
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-span-full text-center py-12">
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Belum Ada Produk</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Produk akan segera tersedia</p>
+                            </div>
+                        @endforelse
                     </div>
+                </div>
                 </div>
             </main>
         </div>
