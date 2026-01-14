@@ -18,7 +18,7 @@ class HistoryController extends Controller
                 return [
                     'id' => $transaction->id,
                     'type' => 'transaction',
-                    'tipe_transaksi' => $transaction->tipe_transaksi, 
+                    'tipe_transaksi' => $transaction->tipe_transaksi,
                     'jenis_sampah' => $transaction->jenis_sampah,
                     'berat' => $transaction->berat,
                     'poin' => $transaction->poin,
