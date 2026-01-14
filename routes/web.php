@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\Admin\ScanConfirmationController;
 use App\Http\Controllers\Admin\RewardController;
+use App\Http\Controllers\Admin\SawController;
 
 // USER CONTROLLER
 use App\Http\Controllers\User\TransactionController;
@@ -226,6 +227,14 @@ Route::middleware(['auth', 'admin'])
         |--------------------------------------------------------------------------
         */
         Route::resource('rewards', RewardController::class);
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN SPK (SAW METHOD)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/saw', [SawController::class, 'index'])
+            ->name('saw.index');
 
         /*
         |--------------------------------------------------------------------------
