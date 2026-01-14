@@ -11,29 +11,45 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\Admin\ScanConfirmationController;
+use App\Http\Controllers\Admin\RewardController;
 
 // USER CONTROLLER
 use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\ScanController;
 
-/*
-|--------------------------------------------------------------------------
-| PUBLIC ROUTE
-|--------------------------------------------------------------------------
-*/
+Route::get('/scan-sampah', function () {
+    return view('scan');
+});
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Temporary public test route for scan page (no auth required)
-Route::get('/scan-test', function () {
-    return view('scan-sampah');
-})->name('scan.test');
+// EMERGENCY DATABASE FIX ROUTE
+Route::get('/fix-db', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate:fresh --seed --force');
+    return "Database has been RESET successfully. Tables created: " . \Illuminate\Support\Facades\Artisan::output();
+});
 
-// Teachable Machine demo (loads model from public/models/UiPePlLlB/)
-Route::get('/model', function () {
-    return view('model');
-})->name('model');
+// ASSET DEBUG ROUTE
+Route::get('/debug-assets', function () {
+    $path = public_path('build/manifest.json');
+    $img_path = public_path('img');
+
+    $files = [];
+    if (is_dir($img_path)) {
+        $files = array_diff(scandir($img_path), array('.', '..'));
+    }
+
+    return [
+        'APP_ENV' => config('app.env'),
+        'APP_URL' => config('app.url'),
+        'Manifest Exists' => file_exists($path),
+        'Files in public/img' => array_values($files),
+        'Rewards in DB' => \App\Models\Reward::all(['name', 'image']),
+    ];
+});
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +65,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', function (Request $request) {
 
         $credentials = $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
@@ -73,17 +89,17 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', function (Request $request) {
 
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',
-            'terms'    => 'required',
+            'terms' => 'required',
         ]);
 
         User::create([
-            'name'              => $validated['name'],
-            'email'             => $validated['email'],
-            'password'          => Hash::make($validated['password']),
-            'role'              => 'user',
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'user',
             'email_verified_at' => now(),
         ]);
 
@@ -99,21 +115,21 @@ Route::middleware('guest')->group(function () {
 */
 Route::middleware('auth')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\User\DashboardController::class, 'index'])
+        ->name('dashboard');
 
     Route::get('/scan-sampah', function () {
         return view('scan-sampah');
     })->name('scan-sampah');
 
-    Route::get('/marketplace', function () {
-        return view('marketplace');
-    })->name('marketplace');
+    Route::get('/marketplace', [\App\Http\Controllers\User\MarketplaceController::class, 'index'])
+        ->name('marketplace');
 
-    Route::get('/profile', function () {
-        return view('profile');
-    })->name('profile');
+    Route::get('/profile', [\App\Http\Controllers\User\ProfileController::class, 'index'])
+        ->name('profile');
+
+    Route::put('/profile', [\App\Http\Controllers\User\ProfileController::class, 'update'])
+        ->name('profile.update');
 
     /*
     |--------------------------------------------------------------------------
@@ -130,7 +146,7 @@ Route::middleware('auth')->group(function () {
         ->name('user.scan.show');
 
     Route::post('/marketplace/tukar', [TransactionController::class, 'tukar'])
-    ->name('marketplace.tukar');
+        ->name('marketplace.tukar');
 
 
     /*
@@ -148,13 +164,19 @@ Route::middleware('auth')->group(function () {
         $transactions = \App\Models\Transaction::where('user_id', Auth::id())
             ->latest()
             ->get();
-        
+
         $scans = \App\Models\Scan::where('user_id', Auth::id())
             ->latest()
             ->get();
 
         return view('riwayat-transaksi', compact('transactions', 'scans'));
     })->name('riwayat-transaksi');
+
+    // Notifications
+    Route::get('/notifications/data', [App\Http\Controllers\User\NotificationController::class, 'getData'])->name('notifications.data');
+    Route::get('/notifications', [App\Http\Controllers\User\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [App\Http\Controllers\User\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [App\Http\Controllers\User\NotificationController::class, 'markAllRead'])->name('notifications.readAll');
 
     Route::post('/logout', function () {
         Auth::logout();
@@ -222,6 +244,16 @@ Route::middleware(['auth', 'admin'])
 
         Route::post('/scans/{scan}/reject', [ScanConfirmationController::class, 'reject'])
             ->name('scans.reject');
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN REWARDS
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/rekomendasi', [\App\Http\Controllers\Admin\SawController::class, 'index'])
+            ->name('saw.index');
+
+        Route::resource('rewards', RewardController::class);
 
         /*
         |--------------------------------------------------------------------------
