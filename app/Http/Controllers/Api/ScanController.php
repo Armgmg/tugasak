@@ -21,12 +21,44 @@ class ScanController extends Controller
             $imagePath = $request->file('image')->store('scans', 'public');
         }
 
+        $aiResult = $request->ai_result ? json_decode($request->ai_result, true) : null;
+        $status = 'pending';
+        $adminNotes = null;
+        $detectedItems = $request->detected_items ? json_decode($request->detected_items, true) : null;
+
+        // Auto-verify if confidence > 90%
+        if ($aiResult && isset($aiResult['confidence']) && $aiResult['confidence'] > 0.90) {
+            $adminNotes = 'SYSTEM_VERIFIED (Confidence: ' . ($aiResult['confidence'] * 100) . '%)';
+            // Auto-populate detected items if empty
+            if (!$detectedItems) {
+                $detectedItems = [
+                    [
+                        'name' => $aiResult['label'],
+                        'confidence' => $aiResult['confidence'] * 100 // Convert to percentage for view
+                    ]
+                ];
+            }
+        }
+        // Handle array format if needed
+        else if ($aiResult && isset($aiResult[0]['confidence']) && $aiResult[0]['confidence'] > 0.90) {
+            $adminNotes = 'SYSTEM_VERIFIED';
+            if (!$detectedItems) {
+                $detectedItems = [
+                    [
+                        'name' => $aiResult[0]['label'],
+                        'confidence' => $aiResult[0]['confidence'] * 100
+                    ]
+                ];
+            }
+        }
+
         $scan = Scan::create([
             'user_id' => $request->user()->id,
             'image_path' => $imagePath,
-            'ai_result' => $request->ai_result ? json_decode($request->ai_result, true) : null,
-            'detected_items' => $request->detected_items ? json_decode($request->detected_items, true) : null,
-            'status' => 'pending',
+            'ai_result' => $aiResult,
+            'detected_items' => $detectedItems,
+            'status' => $status,
+            'admin_notes' => $adminNotes,
         ]);
 
         return response()->json([
