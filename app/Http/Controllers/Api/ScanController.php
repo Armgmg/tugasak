@@ -19,6 +19,11 @@ class ScanController extends Controller
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('scans', 'public');
+            \Illuminate\Support\Facades\Log::info('Image stored', [
+                'path' => $imagePath,
+                'real_path' => storage_path('app/public/' . $imagePath),
+                'exists' => file_exists(storage_path('app/public/' . $imagePath))
+            ]);
         }
 
         $aiResult = $request->ai_result ? json_decode($request->ai_result, true) : null;
