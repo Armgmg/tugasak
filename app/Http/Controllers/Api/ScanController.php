@@ -22,34 +22,55 @@ class ScanController extends Controller
         }
 
         $aiResult = $request->ai_result ? json_decode($request->ai_result, true) : null;
-        $status = 'pending';
+        $status = 'pending'; // Default
         $adminNotes = null;
         $detectedItems = $request->detected_items ? json_decode($request->detected_items, true) : null;
 
-        // Auto-verify if confidence > 90%
-        if ($aiResult && isset($aiResult['confidence']) && $aiResult['confidence'] > 0.90) {
-            $adminNotes = 'SYSTEM_VERIFIED (Confidence: ' . ($aiResult['confidence'] * 100) . '%)';
-            // Auto-populate detected items if empty
+        // Auto-verify/reject logic
+        if ($aiResult && isset($aiResult['confidence'])) {
+            $conf = $aiResult['confidence'];
+            // Normalize detected items
             if (!$detectedItems) {
                 $detectedItems = [
                     [
                         'name' => $aiResult['label'],
-                        'confidence' => $aiResult['confidence'] * 100 // Convert to percentage for view
+                        'confidence' => $conf * 100
                     ]
                 ];
             }
+
+            if ($conf > 0.90) {
+                $adminNotes = 'SYSTEM_VERIFIED (Confidence: ' . ($conf * 100) . '%)';
+                // Status remains pending but marked as verified for admin input of weight
+            } else {
+                $status = 'rejected';
+                $adminNotes = 'AUTO_REJECTED_LOW_CONFIDENCE (Confidence: ' . ($conf * 100) . '%)';
+            }
         }
         // Handle array format if needed
-        else if ($aiResult && isset($aiResult[0]['confidence']) && $aiResult[0]['confidence'] > 0.90) {
-            $adminNotes = 'SYSTEM_VERIFIED';
+        else if ($aiResult && isset($aiResult[0]['confidence'])) {
+            $conf = $aiResult[0]['confidence'];
             if (!$detectedItems) {
                 $detectedItems = [
                     [
                         'name' => $aiResult[0]['label'],
-                        'confidence' => $aiResult[0]['confidence'] * 100
+                        'confidence' => $conf * 100
                     ]
                 ];
             }
+
+            if ($conf > 0.90) {
+                $adminNotes = 'SYSTEM_VERIFIED';
+            } else {
+                $status = 'rejected';
+                $adminNotes = 'AUTO_REJECTED_LOW_CONFIDENCE';
+            }
+        }
+
+        // Store relative path 'scans/filename.jpg' but ensure usage handles it
+        // We will FORCE 'storage/' prefix here to ensure asset() works in blade if simpler
+        if ($imagePath && !str_starts_with($imagePath, 'storage/')) {
+            $imagePath = 'storage/' . $imagePath;
         }
 
         $scan = Scan::create([
