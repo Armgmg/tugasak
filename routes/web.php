@@ -25,38 +25,22 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/debug-storage', function () {
-    $path = storage_path('app/public/scans');
-    $files = is_dir($path) ? scandir($path) : 'Directory not found';
+// FALLBACK IMAGE SERVER (Bypasses Symlink Issues)
+Route::get('storage/scans/{filename}', function ($filename) {
+    $path = storage_path('app/public/scans/' . $filename);
 
-    // Safely check symlink
-    $linkPath = public_path('storage');
-    $linkTarget = is_link($linkPath) ? readlink($linkPath) : 'NOT A LINK';
-
-    return response()->json([
-        'storage_path' => $path,
-        'public_path' => public_path('storage/scans'),
-        'files' => $files,
-        'symlink_status' => $linkTarget,
-        'file_exists_check' => file_exists($linkPath),
-    ]);
-});
-
-Route::get('/fix-storage', function () {
-    $target = storage_path('app/public');
-    $link = public_path('storage');
-
-    if (file_exists($link)) {
-        return 'Link already exists. <br>Target: ' . (is_link($link) ? readlink($link) : 'Not a link');
+    if (!file_exists($path)) {
+        abort(404);
     }
 
-    try {
-        symlink($target, $link);
-        return 'Symlink created successfully!<br>Target: ' . $target . '<br>Link: ' . $link;
-    } catch (\Exception $e) {
-        return 'Failed to create symlink: ' . $e->getMessage();
-    }
-});
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+})->name('storage.scans.show');
 
 
 
