@@ -10,11 +10,18 @@ class ScanController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
-            'image' => 'required|image|max:5120',
-            'ai_result' => 'nullable|json',
-            'detected_items' => 'nullable|json',
-        ]);
+        \Illuminate\Support\Facades\Log::info('ScanController@store hit. Request data:', $request->all());
+
+        try {
+            $request->validate([
+                'image' => 'required|image|max:5120',
+                'ai_result' => 'nullable|json',
+                'detected_items' => 'nullable|json',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error('Scan validation failed:', $e->errors());
+            throw $e;
+        }
 
         $imagePath = null;
         if ($request->hasFile('image')) {
