@@ -29,12 +29,33 @@ Route::get('/debug-storage', function () {
     $path = storage_path('app/public/scans');
     $files = is_dir($path) ? scandir($path) : 'Directory not found';
 
+    // Safely check symlink
+    $linkPath = public_path('storage');
+    $linkTarget = is_link($linkPath) ? readlink($linkPath) : 'NOT A LINK';
+
     return response()->json([
         'storage_path' => $path,
         'public_path' => public_path('storage/scans'),
         'files' => $files,
-        'symlink_target' => readlink(public_path('storage')),
+        'symlink_status' => $linkTarget,
+        'file_exists_check' => file_exists($linkPath),
     ]);
+});
+
+Route::get('/fix-storage', function () {
+    $target = storage_path('app/public');
+    $link = public_path('storage');
+
+    if (file_exists($link)) {
+        return 'Link already exists. <br>Target: ' . (is_link($link) ? readlink($link) : 'Not a link');
+    }
+
+    try {
+        symlink($target, $link);
+        return 'Symlink created successfully!<br>Target: ' . $target . '<br>Link: ' . $link;
+    } catch (\Exception $e) {
+        return 'Failed to create symlink: ' . $e->getMessage();
+    }
 });
 
 
