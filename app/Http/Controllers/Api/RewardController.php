@@ -13,7 +13,20 @@ class RewardController extends Controller
     {
         $rewards = Reward::where('status', true)
             ->orderBy('poin_required')
-            ->get();
+            ->get()
+            ->map(function ($reward) {
+                return [
+                    'id' => $reward->id,
+                    'name' => $reward->name,
+                    'description' => $reward->description,
+                    'poin_required' => $reward->poin_required,
+                    'image' => $reward->image,
+                    'image_url' => $reward->image ? url('img/' . $reward->image) : null,
+                    'status' => $reward->status,
+                    'created_at' => $reward->created_at,
+                    'updated_at' => $reward->updated_at,
+                ];
+            });
 
         return response()->json([
             'success' => true,
