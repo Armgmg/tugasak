@@ -25,6 +25,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/debug-storage', function () {
+    $path = storage_path('app/public/scans');
+    $files = is_dir($path) ? scandir($path) : 'Directory not found';
+
+    return response()->json([
+        'storage_path' => $path,
+        'public_path' => public_path('storage/scans'),
+        'files' => $files,
+        'symlink_target' => readlink(public_path('storage')),
+    ]);
+});
+
 
 
 /*
