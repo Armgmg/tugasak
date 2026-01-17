@@ -24,9 +24,13 @@ class ScanController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $filename = time() . '_' . $request->file('image')->getClientOriginalName();
-            $request->file('image')->move(public_path('uploads/scans'), $filename);
-            $imagePath = 'uploads/scans/' . $filename;
+            // Use standard storage mechanism to match API controller
+            $imagePath = $request->file('image')->store('scans', 'public');
+            // Ensure path has storage/ prefix for DB if needed, but store() returns relative path 'scans/filename'.
+            // The API controller adds 'storage/' prefix manually? Let's check.
+            // API Controller does: $imagePath = 'storage/' . $imagePath;
+            // Let's match that behavior.
+            $imagePath = 'storage/' . $imagePath;
         }
 
         $detectedItems = null;
