@@ -41,11 +41,12 @@ class RewardController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Generate unique filename
-            $filename = time() . '_' . $request->file('image')->getClientOriginalName();
-            // Move directly to public/img
-            $request->file('image')->move(public_path('img'), $filename);
-            $validated['image'] = $filename;
+            // Use storage disk (persistent capable if configured, and safe for Direct Route)
+            $path = $request->file('image')->store('rewards', 'public');
+            // Store relative path 'rewards/filename' (OR prefix 'storage/' if consistent with others)
+            // Let's check API controller... it expects 'img/' prefix currently. We will change that too.
+            // For now let's store 'storage/rewards/filename' to be consistent with Scans.
+            $validated['image'] = 'storage/' . $path;
         }
 
         // Default status to true if not present
@@ -80,14 +81,18 @@ class RewardController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image if it exists in public/img
-            if ($reward->image && file_exists(public_path('img/' . $reward->image))) {
-                unlink(public_path('img/' . $reward->image));
+            // Delete old image if it exists in storage (handling legacy public/img or new storage/)
+            if ($reward->image) {
+                if (file_exists(public_path('img/' . $reward->image))) {
+                    unlink(public_path('img/' . $reward->image));
+                } elseif (str_starts_with($reward->image, 'storage/')) {
+                    $oldPath = str_replace('storage/', '', $reward->image);
+                    Storage::disk('public')->delete($oldPath);
+                }
             }
 
-            $filename = time() . '_' . $request->file('image')->getClientOriginalName();
-            $request->file('image')->move(public_path('img'), $filename);
-            $validated['image'] = $filename;
+            $path = $request->file('image')->store('rewards', 'public');
+            $validated['image'] = 'storage/' . $path;
         }
 
         // Handle checkbox for status

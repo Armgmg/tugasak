@@ -42,6 +42,22 @@ Route::get('storage/scans/{filename}', function ($filename) {
     return $response;
 })->name('storage.scans.show');
 
+Route::get('storage/rewards/{filename}', function ($filename) {
+    $path = storage_path('app/public/rewards/' . $filename);
+
+    if (!file_exists($path)) {
+        abort(404);
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+})->name('storage.rewards.show');
+
 
 
 /*
