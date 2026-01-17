@@ -160,8 +160,10 @@
                             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden product-card border border-gray-200 dark:border-gray-700 flex flex-col"
                                 data-category="{{ $reward->category }}">
                                 <div class="h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden group">
-                                    <img src="{{ asset('img/' . $reward->image) }}" alt="{{ $reward->name }}"
-                                        class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" onerror="this.src='{{ asset('img/placeholder.png') }}'">
+                                    <img src="{{ Str::startsWith($reward->image, 'storage/') ? url($reward->image) : asset('img/' . $reward->image) }}"
+                                        alt="{{ $reward->name }}"
+                                        class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500"
+                                        onerror="this.src='{{ asset('img/placeholder.png') }}'">
                                     <div
                                         class="absolute top-3 right-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-teal-600 dark:text-teal-400 shadow-sm">
                                         {{ number_format($reward->poin_required, 0, ',', '.') }} Pts

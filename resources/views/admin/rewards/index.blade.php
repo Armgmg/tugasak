@@ -42,7 +42,7 @@
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                                 <td class="px-6 py-4">
                                     <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 dark:border-gray-600">
-                                        <img src="{{ asset('img/' . $reward->image) }}" alt="{{ $reward->name }}" class="w-full h-full object-cover">
+                                        <img src="{{ Str::startsWith($reward->image, 'storage/') ? url($reward->image) : asset('img/' . $reward->image) }}" alt="{{ $reward->name }}" class="w-full h-full object-cover">
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
