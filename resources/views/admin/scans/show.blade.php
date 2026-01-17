@@ -8,10 +8,25 @@
             <!-- Image Section -->
             <div>
                 <h2 class="text-xl font-bold text-white mb-4">Foto Scan</h2>
-                <div class="bg-slate-800 rounded-xl overflow-hidden">
-                    <img src="{{ Str::startsWith($scan->image_path, 'storage/') ? asset($scan->image_path) : asset('storage/' . $scan->image_path) }}"
-                        alt="Scan Image" class="w-full h-96 object-cover"
-                        onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+                <div class="bg-slate-800 rounded-xl overflow-hidden group relative">
+                    {{-- Logic for path: remove storage/ if present to cleaner handle, or just ensure relative / --}}
+                    @php
+                        $path = $scan->image_path;
+                        if (!Str::startsWith($path, 'storage/')) {
+                            $path = 'storage/' . $path;
+                        }
+                        // Use relative path to avoid APP_URL port issues
+                        $url = '/' . $path; 
+                    @endphp
+                    <img src="{{ $url }}" 
+                         alt="Scan Image" 
+                         class="w-full h-96 object-cover"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+                    
+                    {{-- Debug overlay on hover --}}
+                    <div class="absolute bottom-0 left-0 right-0 bg-black/70 text-xs text-white p-2 opacity-0 group-hover:opacity-100 transition">
+                        Debug URL: {{ $url }}
+                    </div>
                 </div>
             </div>
 
