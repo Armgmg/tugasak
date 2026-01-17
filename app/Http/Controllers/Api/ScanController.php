@@ -27,6 +27,7 @@ class ScanController extends Controller
         $detectedItems = $request->detected_items ? json_decode($request->detected_items, true) : null;
 
         // Auto-verify/reject logic
+        // Auto-verify/reject logic
         if ($aiResult && isset($aiResult['confidence'])) {
             $conf = $aiResult['confidence'];
             // Normalize detected items
