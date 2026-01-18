@@ -21,7 +21,6 @@ class RewardController extends Controller
                     'description' => $reward->description,
                     'poin_required' => $reward->poin_required,
                     'image' => $reward->image,
-                    'image' => $reward->image,
                     'image_url' => $reward->image
                         ? (str_starts_with($reward->image, 'storage/') ? url('storage/rewards/' . basename($reward->image)) : url('img/' . $reward->image))
                         : null,
