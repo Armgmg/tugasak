@@ -10,6 +10,8 @@ class Reward extends Model
         'name',
         'category',
         'description',
+        'berat',
+        'nilai_poin',
         'poin_required',
         'image',
         'status',

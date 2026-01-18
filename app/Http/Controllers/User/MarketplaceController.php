@@ -21,50 +21,55 @@ class MarketplaceController extends Controller
         // ==========================================
         // IMPLEMENTASI METODE SAW (Simple Additive Weighting)
         // ==========================================
-        // Kriteria:
-        // C1: Harga Poin (Cost) - Bobot 0.5
-        // C2: Popularitas/Jumlah Tukar (Benefit) - Bobot 0.5
+        // Referensi Sesuai Perhitungan User:
+        // C1: Berat (kg) - Benefit - Bobot 3
+        // C2: Nilai Poin - Benefit - Bobot 4
+        // C3: Harga Poin - Cost    - Bobot 5
 
         $weights = [
-            'C1' => 0.5,
-            'C2' => 0.5
+            'C1' => 3,
+            'C2' => 4,
+            'C3' => 5
         ];
 
-        // 1. Persiapkan Data & Hitung Popularitas
+        // 1. Persiapkan Data
+        // Menggunakan data dari database (field: berat, nilai_poin, poin_required)
         $data = [];
         foreach ($rewards as $reward) {
-            // Hitung popularitas berdasarkan jumlah transaksi dengan nama reward ini
-            // Asumsi: kolom 'reward' di tabel transactions menyimpan nama reward
-            $popularity = \App\Models\Transaction::where('reward', $reward->name)
-                ->where('tipe_transaksi', 'tukar')
-                ->count();
-
             $data[] = [
                 'id' => $reward->id,
-                'reward_obj' => $reward, // Simpan objek asli
-                'C1' => $reward->poin_required, // Cost
-                'C2' => $popularity, // Benefit
+                'reward_obj' => $reward,
+                'C1' => (float) $reward->berat,       // Berat (Benefit)
+                'C2' => (float) $reward->nilai_poin,  // Nilai Poin (Benefit)
+                'C3' => (float) $reward->poin_required // Harga Poin (Cost)
             ];
         }
 
         // 2. Cari Nilai Min/Max untuk Normalisasi
         $c1_values = array_column($data, 'C1');
         $c2_values = array_column($data, 'C2');
+        $c3_values = array_column($data, 'C3');
 
-        $min_c1 = !empty($c1_values) ? min($c1_values) : 0;
+        $max_c1 = !empty($c1_values) ? max($c1_values) : 0;
         $max_c2 = !empty($c2_values) ? max($c2_values) : 0;
+        $min_c3 = !empty($c3_values) ? min($c3_values) : 0;
 
         // 3. Normalisasi & Hitung Nilai Preferensi (V)
         foreach ($data as &$row) {
-            // Normalisasi C1 (Cost): Min / Nilai
-            $r1 = ($row['C1'] > 0) ? ($min_c1 / $row['C1']) : 0;
+            // Normalisasi C1 (Benefit): Nilai / Max
+            $r1 = ($max_c1 > 0) ? ($row['C1'] / $max_c1) : 0;
 
             // Normalisasi C2 (Benefit): Nilai / Max
-            // Jika max_c2 0 (belum ada transaksi), maka nilai 0
             $r2 = ($max_c2 > 0) ? ($row['C2'] / $max_c2) : 0;
 
-            // Hitung skor V
-            $v = ($weights['C1'] * $r1) + ($weights['C2'] * $r2);
+            // Normalisasi C3 (Cost): Min / Nilai
+            $r3 = ($row['C3'] > 0) ? ($min_c3 / $row['C3']) : 0;
+
+            // Hitung skor V (Jumlah Perkalian Bobot * Rating)
+            // Rumus: V = (W1 * R1) + (W2 * R2) + (W3 * R3)
+            $v = ($weights['C1'] * $r1) +
+                ($weights['C2'] * $r2) +
+                ($weights['C3'] * $r3);
 
             $row['score'] = $v;
         }
@@ -76,10 +81,8 @@ class MarketplaceController extends Controller
         });
 
         // 5. Kembalikan array reward yang sudah terurut
-        // Kita ambil kembali objek reward dari array data
         $sortedRewards = collect(array_column($data, 'reward_obj'));
 
-        // Kirim $rewards (sorted) ke view
         return view('marketplace', ['rewards' => $sortedRewards]);
     }
 }
