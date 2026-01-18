@@ -94,7 +94,9 @@
                                     <h3 class="text-xl font-bold text-gray-900 dark:text-white" id="profileName">
                                         {{ Auth::user()->name }}
                                     </h3>
-                                    <p class="text-teal-600 dark:text-teal-400 font-semibold mt-1">Member Gold</p>
+                                    <p class="text-teal-600 dark:text-teal-400 font-semibold mt-1">
+                                        {{ Auth::user()->role }}
+                                    </p>
                                     <p class="text-gray-600 dark:text-gray-400 text-sm mt-3" id="profileEmail">{{
     Auth::user()->email }}</p>
                                     <button onclick="toggleEditMode()"
