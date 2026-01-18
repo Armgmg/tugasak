@@ -124,7 +124,7 @@
             </div>
             <div class="flex-1">
                 <p class="font-semibold text-gray-900 dark:text-white">{{ Auth::user()->name ?? 'John Doe' }}</p>
-                <p class="text-xs text-teal-600 dark:text-teal-400 font-medium">Member Gold</p>
+                <p class="text-xs text-teal-600 dark:text-teal-400 font-medium">{{ Auth::user()->role }}</p>
             </div>
         </div>
     </div>
