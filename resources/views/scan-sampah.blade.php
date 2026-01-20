@@ -179,16 +179,17 @@
                                         </svg>
                                         Gunakan Kamera
                                     </button>
+                                </div>
 
-                                    <div id="cameraContainer" class="mt-4 hidden">
-                                        <video id="cameraVideo" autoplay playsinline
-                                            class="w-full rounded-lg mb-4 bg-black" style="min-height: 300px;"></video>
-                                        <div class="flex gap-3">
-                                            <button id="captureBtn" onclick="captureFromCamera()"
-                                                class="px-4 py-2 bg-teal-500 text-white rounded-lg">Ambil Foto</button>
-                                            <button id="stopCameraBtn" onclick="stopCamera()"
-                                                class="px-4 py-2 border rounded-lg">Stop Kamera</button>
-                                        </div>
+                                <!-- Camera Container (Outside uploadArea) -->
+                                <div id="cameraContainer" class="mt-4 hidden">
+                                    <video id="cameraVideo" autoplay playsinline class="w-full rounded-lg mb-4 bg-black"
+                                        style="min-height: 300px;"></video>
+                                    <div class="flex gap-3">
+                                        <button id="captureBtn" onclick="captureFromCamera()"
+                                            class="px-4 py-2 bg-teal-500 text-white rounded-lg">Ambil Foto</button>
+                                        <button id="stopCameraBtn" onclick="stopCamera()"
+                                            class="px-4 py-2 border rounded-lg">Stop Kamera</button>
                                     </div>
                                 </div>
 
