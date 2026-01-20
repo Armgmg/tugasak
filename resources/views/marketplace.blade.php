@@ -306,13 +306,42 @@
                                 <div id="detailPointsStatus" class="mt-3 text-sm font-medium"></div>
                             </div>
 
-                            <!-- Action Buttons -->
-                            <div class="mt-auto flex gap-3">
+                            <!-- Contact Form (Hidden by default, shown when Tukar Sekarang is clicked) -->
+                            <form id="detailRedeemForm" action="{{ route('marketplace.tukar') }}" method="POST" class="hidden">
+                                @csrf
+                                <input type="hidden" name="reward_id" id="detailRewardId">
+                                
+                                <div class="mb-6 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-lg border border-gray-200 dark:border-slate-700">
+                                    <label for="detail_contact_info" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Nomor HP / Email <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="contact_info" id="detail_contact_info" required
+                                        placeholder="08123456789 atau email@example.com"
+                                        class="w-full px-4 py-3 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-teal-500 outline-none transition-all">
+                                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                        Info ini digunakan untuk konfirmasi pengiriman reward.
+                                    </p>
+                                </div>
+
+                                <div class="flex gap-3">
+                                    <button type="button" onclick="cancelRedeemForm()" 
+                                        class="flex-1 px-4 py-3 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 font-semibold rounded-lg transition-colors">
+                                        Batal
+                                    </button>
+                                    <button type="submit"
+                                        class="flex-1 px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg">
+                                        Konfirmasi
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Action Buttons (Shown by default, hidden when form is shown) -->
+                            <div id="detailActionButtons" class="mt-auto flex gap-3">
                                 <button onclick="closeDetailModal()" 
                                     class="flex-1 px-4 py-3 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 font-semibold rounded-lg transition-colors">
                                     Tutup
                                 </button>
-                                <button id="detailRedeemBtn" onclick="openRedeemFromDetail()" 
+                                <button id="detailRedeemBtn" onclick="showRedeemForm()" 
                                     class="flex-1 px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                                     Tukar Sekarang
                                 </button>
@@ -505,14 +534,36 @@
 
         function closeDetailModal() {
             document.getElementById('detailModal').classList.add('hidden');
+            // Reset form when closing
+            document.getElementById('detailRedeemForm').classList.add('hidden');
+            document.getElementById('detailActionButtons').classList.remove('hidden');
+            document.getElementById('detail_contact_info').value = '';
             currentRewardData = null;
         }
 
-        function openRedeemFromDetail() {
+        function showRedeemForm() {
             if (currentRewardData) {
-                closeDetailModal();
-                openRedeemModal(currentRewardData.id, currentRewardData.name, currentRewardData.poin_required);
+                // Set reward ID in form
+                document.getElementById('detailRewardId').value = currentRewardData.id;
+                
+                // Hide action buttons, show form
+                document.getElementById('detailActionButtons').classList.add('hidden');
+                document.getElementById('detailRedeemForm').classList.remove('hidden');
+                
+                // Focus on input
+                setTimeout(() => {
+                    document.getElementById('detail_contact_info').focus();
+                }, 100);
             }
+        }
+
+        function cancelRedeemForm() {
+            // Hide form, show action buttons
+            document.getElementById('detailRedeemForm').classList.add('hidden');
+            document.getElementById('detailActionButtons').classList.remove('hidden');
+            
+            // Clear input
+            document.getElementById('detail_contact_info').value = '';
         }
 
         function filterProducts(category) {
