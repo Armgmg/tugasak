@@ -271,6 +271,103 @@
         </div>
     </div>
 
+    <!-- Transaction Detail Modal -->
+    <div id="transactionDetailModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="transaction-detail-title"
+        role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity" aria-hidden="true"
+            onclick="closeTransactionDetail()"></div>
+
+        <!-- Modal Container -->
+        <div class="fixed inset-0 z-[101] w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+
+                <!-- Modal Panel -->
+                <div
+                    class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 text-left shadow-2xl transition-all sm:my-8 w-full max-w-2xl border border-gray-200 dark:border-slate-700 mx-auto">
+
+                    <!-- Close Button -->
+                    <button onclick="closeTransactionDetail()"
+                        class="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/90 dark:bg-slate-700/90 hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
+                        <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Modal Content -->
+                    <div class="p-6">
+                        <!-- Header -->
+                        <div class="mb-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div id="detailIcon" class="w-12 h-12 rounded-lg flex items-center justify-center">
+                                    <span class="text-2xl"></span>
+                                </div>
+                                <div>
+                                    <h2 id="detailTransactionTitle"
+                                        class="text-2xl font-bold text-gray-900 dark:text-white"></h2>
+                                    <p id="detailTransactionType" class="text-sm text-gray-500 dark:text-gray-400"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transaction Details -->
+                        <div class="space-y-4">
+                            <!-- Date -->
+                            <div
+                                class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Tanggal</span>
+                                <span id="detailDate"
+                                    class="text-sm font-semibold text-gray-900 dark:text-white"></span>
+                            </div>
+
+                            <!-- Weight -->
+                            <div id="detailWeightRow"
+                                class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Berat</span>
+                                <span id="detailWeight"
+                                    class="text-sm font-semibold text-gray-900 dark:text-white"></span>
+                            </div>
+
+                            <!-- Points -->
+                            <div
+                                class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Poin</span>
+                                <span id="detailPoints" class="text-sm font-bold"></span>
+                            </div>
+
+                            <!-- Contact Info (for rewards) -->
+                            <div id="detailContactRow"
+                                class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700 hidden">
+                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Kontak</span>
+                                <span id="detailContact"
+                                    class="text-sm font-semibold text-gray-900 dark:text-white"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="flex items-center justify-between py-3">
+                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Status</span>
+                                <span id="detailStatus"
+                                    class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">
+                                    Selesai
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Action Button -->
+                        <div class="mt-6">
+                            <button onclick="closeTransactionDetail()"
+                                class="w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const transactionsData = @json($transactions);
         const scansData = @json($scans);
@@ -346,7 +443,7 @@
                     </span>
                 </td>
                 <td class="px-6 py-4 text-right">
-                    <button class="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-semibold transition">
+                    <button onclick="showTransactionDetail(${tx.id})" class="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-semibold transition">
                         Detail
                     </button>
                 </td>
@@ -387,7 +484,7 @@
     <tr class="table-row-hover">
         <td class="px-6 py-4">
             <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700">
-                <img src="/${scan.image_path}" alt="Scan" class="w-full h-full object-cover">
+                <img src="/storage/scans/${scan.image_path ? scan.image_path.replace('storage/app/public/scans/', '').replace('scans/', '') : 'placeholder.png'}" alt="Scan" class="w-full h-full object-cover" onerror="this.src='/img/placeholder.png'">
             </div>
         </td>
         <td class="px-6 py-4 text-gray-600 dark:text-gray-400">${new Date(scan.created_at).toLocaleDateString('id-ID')}
@@ -489,6 +586,67 @@
                 filterMenu.classList.add('hidden');
             }
         });
+
+        // Transaction Detail Modal Functions
+        function showTransactionDetail(transactionId) {
+            const transaction = transactionsData.find(tx => tx.id === transactionId);
+            if (!transaction) {
+                console.error('Transaction not found:', transactionId);
+                return;
+            }
+
+            const isDeposit = transaction.tipe_transaksi === 'setor';
+            const sign = isDeposit ? '+' : '-';
+            const colorClass = isDeposit ? 'text-teal-600 dark:text-teal-400' : 'text-red-600 dark:text-red-400';
+            const bgClass = isDeposit ? 'bg-teal-100 dark:bg-teal-900/30' : 'bg-red-100 dark:bg-red-900/30';
+            const icon = isDeposit ? '♻️' : '🎁';
+
+            // Set icon
+            const iconEl = document.getElementById('detailIcon');
+            iconEl.className = `w-12 h-12 rounded-lg flex items-center justify-center ${bgClass}`;
+            iconEl.querySelector('span').textContent = icon;
+
+            // Set title and type
+            document.getElementById('detailTransactionTitle').textContent = transaction.jenis_sampah || 'Transaksi';
+            document.getElementById('detailTransactionType').textContent = isDeposit ? 'Penukaran Sampah' : 'Penukaran Reward';
+
+            // Set date
+            document.getElementById('detailDate').textContent = new Date(transaction.created_at).toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Set weight (hide if not applicable)
+            const weightRow = document.getElementById('detailWeightRow');
+            if (transaction.berat) {
+                weightRow.classList.remove('hidden');
+                document.getElementById('detailWeight').textContent = transaction.berat + ' kg';
+            } else {
+                weightRow.classList.add('hidden');
+            }
+
+            // Set points
+            document.getElementById('detailPoints').textContent = `${sign} ${transaction.poin || 0} pts`;
+            document.getElementById('detailPoints').className = `text-sm font-bold ${colorClass}`;
+
+            // Set contact info (for rewards)
+            const contactRow = document.getElementById('detailContactRow');
+            if (transaction.contact_info) {
+                contactRow.classList.remove('hidden');
+                document.getElementById('detailContact').textContent = transaction.contact_info;
+            } else {
+                contactRow.classList.add('hidden');
+            }
+
+            // Show modal
+            document.getElementById('transactionDetailModal').classList.remove('hidden');
+        }
+
+        function closeTransactionDetail() {
+            document.getElementById('transactionDetailModal').classList.add('hidden');
+        }
     </script>
 
     <style>
