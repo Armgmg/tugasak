@@ -352,7 +352,7 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     previewImage.src = e.target.result;
-                    uploadArea.classList.add('hidden');
+                    uploadArea.style.display = 'none';
                     previewContainer.classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
@@ -363,7 +363,7 @@
             fileInput.value = '';
             currentFile = null;
             aiResultData = null;
-            uploadArea.classList.remove('hidden');
+            uploadArea.style.display = 'flex';
             previewContainer.classList.add('hidden');
             resultContainer.classList.add('hidden');
             noResultContainer.classList.remove('hidden');
@@ -438,7 +438,7 @@
             previewImage.src = dataUrl;
             currentFile = dataURLtoFile(dataUrl, 'camera_capture.png'); // Convert to file
 
-            uploadArea.classList.add('hidden');
+            uploadArea.style.display = 'none';
             previewContainer.classList.remove('hidden');
             stopCamera();
         }
