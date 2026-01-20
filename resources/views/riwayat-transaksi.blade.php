@@ -471,10 +471,15 @@
                 try {
                     if (scan.detected_items) {
                         const items = typeof scan.detected_items === 'string' ? JSON.parse(scan.detected_items) : scan.detected_items;
-                        detectedItems = Object.keys(items).join(', ');
+                        if (Array.isArray(items) && items.length > 0) {
+                            detectedItems = items.map(item => item.name || item.className || 'Unknown').join(', ');
+                        } else if (typeof items === 'object' && Object.keys(items).length > 0) {
+                            detectedItems = Object.keys(items).join(', ');
+                        }
                     }
                 } catch (e) {
-                    detectedItems = 'Error parsing items';
+                    console.error('Error parsing detected_items:', e);
+                    detectedItems = '-';
                 }
 
                 return `
