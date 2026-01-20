@@ -291,33 +291,6 @@
                                 </p>
                             </div>
 
-                            <!-- SAW Criteria Info -->
-                            <div class="mb-6 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-lg border border-gray-200 dark:border-slate-700">
-                                <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    Informasi Kriteria
-                                </h3>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-2 h-2 bg-teal-500 rounded-full"></div>
-                                        <div>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Berat</p>
-                                            <p id="detailBerat" class="text-sm font-semibold text-gray-900 dark:text-white"></p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                        <div>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Nilai Poin</p>
-                                            <p id="detailNilaiPoin" class="text-sm font-semibold text-gray-900 dark:text-white"></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- User Points Info -->
                             <div class="mb-6 p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-200 dark:border-teal-900/50">
                                 <div class="flex items-center justify-between">
@@ -493,10 +466,6 @@
             } else {
                 rankingBadge.className = 'absolute top-4 left-4 hidden';
             }
-            
-            // Set SAW criteria
-            document.getElementById('detailBerat').textContent = rewardData.berat + ' kg';
-            document.getElementById('detailNilaiPoin').textContent = new Intl.NumberFormat('id-ID').format(rewardData.nilai_poin) + ' Pts';
             
             // Set user points info
             document.getElementById('detailUserPoints').textContent = 
