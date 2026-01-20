@@ -85,24 +85,29 @@
                             </div>
 
                             <!-- Detected Items -->
-                            @if($scan->detected_items && count($scan->detected_items) > 0)
+                            @if($scan->detected_items)
                                 <div class="bg-slate-800 rounded-xl p-6">
                                     <h3 class="text-lg font-bold text-white mb-4">🎯 Hasil Deteksi AI</h3>
-                                    <div class="space-y-3">
-                                        @foreach($scan->detected_items as $item)
-                                            <div class="bg-slate-700 rounded-lg p-3">
-                                                <div class="flex justify-between items-center mb-2">
-                                                    <span class="font-medium text-white">{{ $item['name'] ?? 'Item' }}</span>
-                                                    <span
-                                                        class="text-green-400 font-bold">{{ round($item['confidence'] ?? 0, 1) }}%</span>
+                                    @if(is_array($scan->detected_items) && count($scan->detected_items) > 0)
+                                        <div class="space-y-3">
+                                            @foreach($scan->detected_items as $item)
+                                                <div class="bg-slate-700 rounded-lg p-3">
+                                                    <div class="flex justify-between items-center mb-2">
+                                                        <span class="font-medium text-white">{{ $item['name'] ?? 'Item' }}</span>
+                                                        <span
+                                                            class="text-green-400 font-bold">{{ round($item['confidence'] ?? 0, 1) }}%</span>
+                                                    </div>
+                                                    <div class="w-full bg-slate-600 rounded-full h-2">
+                                                        <div class="bg-green-500 h-2 rounded-full"
+                                                            style="width: {{ ($item['confidence'] ?? 0) }}%"></div>
+                                                    </div>
                                                 </div>
-                                                <div class="w-full bg-slate-600 rounded-full h-2">
-                                                    <div class="bg-green-500 h-2 rounded-full"
-                                                        style="width: {{ ($item['confidence'] ?? 0) }}%"></div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <p class="text-gray-400 text-sm">Tidak ada item yang terdeteksi atau akurasi terlalu
+                                            rendah.</p>
+                                    @endif
                                 </div>
                             @endif
 

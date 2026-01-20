@@ -108,7 +108,7 @@
 
                                 <!-- Stats Grid -->
                                 <div
-                                    class="grid grid-cols-2 gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                    class="grid grid-cols-3 gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                                     <div class="text-center">
                                         <p class="text-2xl font-bold text-teal-600 dark:text-teal-400">
                                             {{ number_format(Auth::user()->poin ?? 0, 0, ',', '.') }}
@@ -127,12 +127,7 @@
                                         </p>
                                         <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">Sampah</p>
                                     </div>
-                                    <div class="text-center">
-                                        <p class="text-2xl font-bold text-teal-600 dark:text-teal-400">
-                                            {{ $carbonSaved }}kg
-                                        </p>
-                                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">CO₂ Hemat</p>
-                                    </div>
+
                                 </div>
 
                                 <!-- Achievements -->
@@ -288,26 +283,6 @@
                             </div>
 
                             <!-- Activity Timeline -->
-
-
-                            <!-- Danger Zone -->
-                            <div
-                                class="bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200 dark:border-red-900/30 p-6 animate-slide-in-up">
-                                <h3 class="text-lg font-bold text-red-700 dark:text-red-400 mb-4">Zona Bahaya</h3>
-                                <div class="space-y-3">
-                                    <button
-                                        class="w-full px-4 py-2 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 font-semibold rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition">
-                                        Hapus Akun
-                                    </button>
-                                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                                        @csrf
-                                        <button type="submit"
-                                            class="w-full px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">
-                                            Keluar dari Akun
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
