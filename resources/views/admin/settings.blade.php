@@ -11,16 +11,6 @@
         @endif
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- System Information -->
-            <div class="bg-slate-800 rounded-xl p-6">
-                <h3 class="text-lg font-bold text-white mb-4">Informasi Sistem</h3>
-                <div class="space-y-3 text-gray-300 text-sm">
-                    <p><span class="text-gray-500">Aplikasi:</span> EcoRewards Bank Sampah Digital</p>
-                    <p><span class="text-gray-500">Versi:</span> 1.0.0</p>
-                    <p><span class="text-gray-500">Laravel:</span> 12.40.2</p>
-                    <p><span class="text-gray-500">Database:</span> SQLite</p>
-                </div>
-            </div>
 
             <!-- Quick Stats -->
             <div class="bg-slate-800 rounded-xl p-6">
