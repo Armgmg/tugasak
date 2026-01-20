@@ -157,8 +157,20 @@
                         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-slide-in-up">
                         @forelse($rewards as $reward)
                             <!-- Product Card -->
-                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden product-card border border-gray-200 dark:border-gray-700 flex flex-col"
-                                data-category="{{ $reward->category }}">
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden product-card border border-gray-200 dark:border-gray-700 flex flex-col cursor-pointer"
+                                data-category="{{ $reward->category }}"
+                                onclick="openDetailModal({
+                                    id: {{ $reward->id }},
+                                    name: '{{ addslashes($reward->name) }}',
+                                    description: '{{ addslashes($reward->description) }}',
+                                    category: '{{ $reward->category }}',
+                                    poin_required: {{ $reward->poin_required }},
+                                    image: '{{ Str::startsWith($reward->image, 'storage/') ? url($reward->image) : asset('img/' . $reward->image) }}',
+                                    ranking: {{ $loop->iteration }},
+                                    berat: {{ $reward->berat ?? 0 }},
+                                    nilai_poin: {{ $reward->nilai_poin ?? 0 }},
+                                    user_poin: {{ Auth::user()->poin }}
+                                })">
                                 <div class="h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden group">
                                     <img src="{{ Str::startsWith($reward->image, 'storage/') ? url($reward->image) : asset('img/' . $reward->image) }}"
                                         alt="{{ $reward->name }}"
@@ -199,7 +211,7 @@
                                         class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Stok: Tersedia</span>
                                         <button
-                                            onclick="openRedeemModal({{ $reward->id }}, '{{ addslashes($reward->name) }}', {{ $reward->poin_required }})"
+                                            onclick="event.stopPropagation(); openRedeemModal({{ $reward->id }}, '{{ addslashes($reward->name) }}', {{ $reward->poin_required }})"
                                             class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold rounded-lg transition shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                             {{ Auth::user()->poin < $reward->poin_required ? 'disabled' : '' }}>
                                             Tukar
@@ -222,6 +234,120 @@
                     </div>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="detail-modal-title" role="dialog"
+        aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity" aria-hidden="true"
+            onclick="closeDetailModal()"></div>
+
+        <!-- Modal Container -->
+        <div class="fixed inset-0 z-[101] w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+
+                <!-- Modal Panel -->
+                <div
+                    class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 text-left shadow-2xl transition-all sm:my-8 w-full max-w-3xl border border-gray-200 dark:border-slate-700 mx-auto">
+                    
+                    <!-- Close Button -->
+                    <button onclick="closeDetailModal()" 
+                        class="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/90 dark:bg-slate-700/90 hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
+                        <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Modal Content -->
+                    <div class="flex flex-col md:flex-row">
+                        <!-- Image Section -->
+                        <div class="md:w-1/2 bg-gray-100 dark:bg-slate-900 relative">
+                            <div class="aspect-square relative">
+                                <img id="detailImage" src="" alt="" 
+                                    class="w-full h-full object-cover">
+                                <!-- Ranking Badge -->
+                                <div id="detailRankingBadge" class="absolute top-4 left-4 hidden"></div>
+                                <!-- Points Badge -->
+                                <div id="detailPointsBadge" 
+                                    class="absolute top-4 right-4 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm px-4 py-2 rounded-full font-bold text-teal-600 dark:text-teal-400 shadow-lg border border-teal-200 dark:border-teal-900">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info Section -->
+                        <div class="md:w-1/2 p-6 flex flex-col">
+                            <!-- Header -->
+                            <div class="mb-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span id="detailCategory" 
+                                        class="px-3 py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 text-xs font-semibold rounded-full">
+                                    </span>
+                                </div>
+                                <h2 id="detailTitle" class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                </h2>
+                                <p id="detailDescription" class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                                </p>
+                            </div>
+
+                            <!-- SAW Criteria Info -->
+                            <div class="mb-6 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-lg border border-gray-200 dark:border-slate-700">
+                                <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Informasi Kriteria
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-teal-500 rounded-full"></div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Berat</p>
+                                            <p id="detailBerat" class="text-sm font-semibold text-gray-900 dark:text-white"></p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Nilai Poin</p>
+                                            <p id="detailNilaiPoin" class="text-sm font-semibold text-gray-900 dark:text-white"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Points Info -->
+                            <div class="mb-6 p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-200 dark:border-teal-900/50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Poin Anda Saat Ini</p>
+                                        <p id="detailUserPoints" class="text-2xl font-bold text-teal-600 dark:text-teal-400"></p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Poin Diperlukan</p>
+                                        <p id="detailRequiredPoints" class="text-2xl font-bold text-gray-900 dark:text-white"></p>
+                                    </div>
+                                </div>
+                                <div id="detailPointsStatus" class="mt-3 text-sm font-medium"></div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="mt-auto flex gap-3">
+                                <button onclick="closeDetailModal()" 
+                                    class="flex-1 px-4 py-3 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 font-semibold rounded-lg transition-colors">
+                                    Tutup
+                                </button>
+                                <button id="detailRedeemBtn" onclick="openRedeemFromDetail()" 
+                                    class="flex-1 px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Tukar Sekarang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -327,6 +453,97 @@
 
         function closeRedeemModal() {
             document.getElementById('redeemModal').classList.add('hidden');
+        }
+
+        // Detail Modal Functions
+        let currentRewardData = null;
+
+        function openDetailModal(rewardData) {
+            currentRewardData = rewardData;
+            
+            // Set image
+            document.getElementById('detailImage').src = rewardData.image;
+            document.getElementById('detailImage').alt = rewardData.name;
+            
+            // Set basic info
+            document.getElementById('detailTitle').textContent = rewardData.name;
+            document.getElementById('detailDescription').textContent = rewardData.description;
+            document.getElementById('detailCategory').textContent = rewardData.category;
+            
+            // Set points badge
+            document.getElementById('detailPointsBadge').textContent = 
+                new Intl.NumberFormat('id-ID').format(rewardData.poin_required) + ' Pts';
+            
+            // Set ranking badge
+            const rankingBadge = document.getElementById('detailRankingBadge');
+            if (rewardData.ranking === 1) {
+                rankingBadge.className = 'absolute top-4 left-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1 border border-yellow-300';
+                rankingBadge.innerHTML = `
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    Peringkat #1
+                `;
+            } else if (rewardData.ranking === 2) {
+                rankingBadge.className = 'absolute top-4 left-4 bg-gray-300 text-gray-800 px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1 border border-gray-400';
+                rankingBadge.innerHTML = '<span class="font-extrabold text-sm">#2</span> Peringkat 2';
+            } else if (rewardData.ranking === 3) {
+                rankingBadge.className = 'absolute top-4 left-4 bg-orange-300 text-orange-900 px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1 border border-orange-400';
+                rankingBadge.innerHTML = '<span class="font-extrabold text-sm">#3</span> Peringkat 3';
+            } else {
+                rankingBadge.className = 'absolute top-4 left-4 hidden';
+            }
+            
+            // Set SAW criteria
+            document.getElementById('detailBerat').textContent = rewardData.berat + ' kg';
+            document.getElementById('detailNilaiPoin').textContent = new Intl.NumberFormat('id-ID').format(rewardData.nilai_poin) + ' Pts';
+            
+            // Set user points info
+            document.getElementById('detailUserPoints').textContent = 
+                new Intl.NumberFormat('id-ID').format(rewardData.user_poin) + ' Pts';
+            document.getElementById('detailRequiredPoints').textContent = 
+                new Intl.NumberFormat('id-ID').format(rewardData.poin_required) + ' Pts';
+            
+            // Set points status
+            const statusDiv = document.getElementById('detailPointsStatus');
+            const redeemBtn = document.getElementById('detailRedeemBtn');
+            
+            if (rewardData.user_poin >= rewardData.poin_required) {
+                const remaining = rewardData.user_poin - rewardData.poin_required;
+                statusDiv.className = 'mt-3 text-sm font-medium text-green-600 dark:text-green-400';
+                statusDiv.innerHTML = `
+                    <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    Poin Anda cukup! Sisa poin setelah penukaran: ${new Intl.NumberFormat('id-ID').format(remaining)} Pts
+                `;
+                redeemBtn.disabled = false;
+            } else {
+                const needed = rewardData.poin_required - rewardData.user_poin;
+                statusDiv.className = 'mt-3 text-sm font-medium text-red-600 dark:text-red-400';
+                statusDiv.innerHTML = `
+                    <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    Poin Anda kurang ${new Intl.NumberFormat('id-ID').format(needed)} Pts untuk menukar reward ini
+                `;
+                redeemBtn.disabled = true;
+            }
+            
+            // Show modal
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+            currentRewardData = null;
+        }
+
+        function openRedeemFromDetail() {
+            if (currentRewardData) {
+                closeDetailModal();
+                openRedeemModal(currentRewardData.id, currentRewardData.name, currentRewardData.poin_required);
+            }
         }
 
         function filterProducts(category) {
