@@ -484,7 +484,7 @@
     <tr class="table-row-hover">
         <td class="px-6 py-4">
             <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700">
-                <img src="/storage/scans/${scan.image_path ? scan.image_path.replace('storage/app/public/scans/', '').replace('scans/', '') : 'placeholder.png'}" alt="Scan" class="w-full h-full object-cover" onerror="this.src='/img/placeholder.png'">
+                <img src="/${scan.image_path || 'img/placeholder.png'}" alt="Scan" class="w-full h-full object-cover" onerror="this.src='/img/placeholder.png'">
             </div>
         </td>
         <td class="px-6 py-4 text-gray-600 dark:text-gray-400">${new Date(scan.created_at).toLocaleDateString('id-ID')}
