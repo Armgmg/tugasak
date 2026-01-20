@@ -239,9 +239,6 @@
                                         class="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
                                         <th
                                             class="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                            FOTO</th>
-                                        <th
-                                            class="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                                             TANGGAL</th>
                                         <th
                                             class="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -462,7 +459,7 @@
             if (scans.length === 0) {
                 tbody.innerHTML = `
                 <tr class="table-row-hover">
-                    <td colspan="7" class="px-6 py-8 text-center text-gray-600 dark:text-gray-400">Belum ada riwayat scan</td>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-600 dark:text-gray-400">Belum ada riwayat scan</td>
                 </tr>`;
                 return;
             }
@@ -482,11 +479,6 @@
 
                 return `
     <tr class="table-row-hover">
-        <td class="px-6 py-4">
-            <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700">
-                <img src="/${scan.image_path || 'img/placeholder.png'}" alt="Scan" class="w-full h-full object-cover" onerror="this.src='/img/placeholder.png'">
-            </div>
-        </td>
         <td class="px-6 py-4 text-gray-600 dark:text-gray-400">${new Date(scan.created_at).toLocaleDateString('id-ID')}
         </td>
         <td class="px-6 py-4 text-gray-600 dark:text-gray-400">${detectedItems}</td>
